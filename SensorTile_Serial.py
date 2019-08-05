@@ -10,6 +10,8 @@ import requests
 
 class serial_SensorTile():
 
+	url = "https://api.myjson.com/bins/jub2l"
+	headers = {'Content-type': 'application/json'}
 
 
 	def __init__(self, address, baud_rate=9600, timeout=2, python3=False):
@@ -106,28 +108,40 @@ class serial_SensorTile():
 
 				line = line.rstrip()
 
+
 				# split data
 
-				data = line.split('\t')
+				data = line.split(',')
+
+				#my_string = "blah, lots  ,  of ,  spaces, here "
+			
 
 				# str to float and store dis, accel
 
 				try:
-
+					#print "newtest"
+				
 					print ("{}".format(data))
-					print ("sending data")
+					print data[0]
+					print "zero"
+					print data[1]
+					
 
+					if int(data[0]) > 400:
+						print "X over 400"
+						url = "https://api.myjson.com/bins/jub2l"
+						headers = {'Content-type': 'application/json'}
+						#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
+						datas = {"360Rotation":0,"slideBrightness":data[0],"slideNumber":data[1],"animationIsPlaying":0,"dismissPresentation":0}
+						rsp = requests.put(url, json=datas, headers=headers)
+					if int(data[0]) < -400:
+						print "X less than 400"
+						url = "https://api.myjson.com/bins/jub2l"
+						headers = {'Content-type': 'application/json'}
+						#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
+						datas = {"360Rotation":0,"slideBrightness":data[0],"slideNumber":data[1],"animationIsPlaying":0,"dismissPresentation":0}
+						rsp = requests.put(url, json=datas, headers=headers)
 
-					#url = "https://api.myjson.com/bins/1duknl"
-					url = "https://api.myjson.com/bins/jub2l"
-
-		
-					headers = {'Content-type': 'application/json'}
-
-
-					#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
-					datas = {"360Rotation":888,"slideBrightness":0.5,"slideNumber":data[1],"animationIsPlaying":0,"dismissPresentation":0}
-					rsp = requests.put(url, json=datas, headers=headers)
 
 
 					dis = float(data[0])
