@@ -6,13 +6,12 @@ import sys
 
 import requests
 
-
-
 class serial_SensorTile():
 
-	url = "https://api.myjson.com/bins/jub2l"
-	headers = {'Content-type': 'application/json'}
-
+	Xvalue = 0;
+	Yvalue = 0;
+	Zvalue = 0; 
+	slideNum = 0; 
 
 	def __init__(self, address, baud_rate=9600, timeout=2, python3=False):
 
@@ -33,7 +32,6 @@ class serial_SensorTile():
 		self.data_check = 0
 
 		self.python3 = python3
-
 
 
 	def init_connection(self):
@@ -102,6 +100,8 @@ class serial_SensorTile():
 
 			accel_list = []
 
+			
+
 			for line in ser_bytes:
 
 				# discard \r
@@ -113,40 +113,63 @@ class serial_SensorTile():
 
 				data = line.split(',')
 
-				#my_string = "blah, lots  ,  of ,  spaces, here "
-			
+		
+
 
 				# str to float and store dis, accel
 
 				try:
 					#print "newtest"
 				
-					print ("{}".format(data))
-					print data[0]
-					print "zero"
-					print data[1]
+					#print ("{}".format(data))
+					
+					###print data[0] #X
+					print "pre"
+					print self.Yvalue #Y
+					###print data[2] #Z
+					###print data[3] #GX
+					##print data[2] #GY
+					##print data[4] #GZ
+
+				
+					dis = float(data[0])
+					accel = float(data[1])
+
+					if int(data[1]) < -1000:
+						if self.Yvalue > -10:
+							#stime.sleep(5) 
+							print "#########################"
+							self.slideNum+=1
+							print self.slideNum
+						else:
+							print ""
+
+						
+						#print self.Xvalue
+						#self.Xvalue+=1
+
 					
 
-					if int(data[0]) > 400:
-						print "X over 400"
-						url = "https://api.myjson.com/bins/jub2l"
-						headers = {'Content-type': 'application/json'}
-						#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
-						datas = {"360Rotation":0,"slideBrightness":data[0],"slideNumber":data[1],"animationIsPlaying":0,"dismissPresentation":0}
-						rsp = requests.put(url, json=datas, headers=headers)
-					if int(data[0]) < -400:
-						print "X less than 400"
-						url = "https://api.myjson.com/bins/jub2l"
-						headers = {'Content-type': 'application/json'}
-						#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
-						datas = {"360Rotation":0,"slideBrightness":data[0],"slideNumber":data[1],"animationIsPlaying":0,"dismissPresentation":0}
-						rsp = requests.put(url, json=datas, headers=headers)
+				
+					elif int(data[3]) > 1000 & int(data[3]) > 200:
+						print ''
+					
+					elif int(data[2]) < -800:
+						#send the actual value to Unity and do a check there
+						print ''
+						
+					else:
+						print "" 
 
 
+					self.Xvalue = data[0]
+					self.Yvalue = data[1]
+					self.Zvalue = data[2]
 
-					dis = float(data[0])
+					#print Xvalue
+					#print Yvalue
+					#print Zvalue
 
-					accel = float(data[1])
 
 					# print ("{}".format(dis))
 
