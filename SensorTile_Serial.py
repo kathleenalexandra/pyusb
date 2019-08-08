@@ -12,6 +12,12 @@ class serial_SensorTile():
 	Yvalue = 0;
 	Zvalue = 0; 
 	slideNum = 0; 
+	slideOrientation = 0
+	url = "https://api.myjson.com/bins/jub2l"
+	headers = {'Content-type': 'application/json'}
+						#datas = {"color":"pink","speed":data[1],"pulse":1, "number":17}
+	
+
 
 	def __init__(self, address, baud_rate=9600, timeout=2, python3=False):
 
@@ -123,10 +129,14 @@ class serial_SensorTile():
 				
 					#print ("{}".format(data))
 					
-					###print data[0] #X
-					print "pre"
-					print self.Yvalue #Y
-					###print data[2] #Z
+				
+					print "x"
+					print data[0]
+					print "y" #Z
+					print data[1]
+					print "z"
+					print data[2]
+			
 					###print data[3] #GX
 					##print data[2] #GY
 					##print data[4] #GZ
@@ -135,31 +145,45 @@ class serial_SensorTile():
 					dis = float(data[0])
 					accel = float(data[1])
 
-					if int(data[1]) < -1000:
+
+
+					if int(data[0]) < -800:
+						print "turn left"
+						self.slideNum-=1
+						print self.slideNum
+						datas = {"360Rotation":0,"slideBrightness":24,"slideNumber":self.slideNum,"animationIsPlaying":0,"dismissPresentation":0}
+						rsp = requests.put(self.url, json=datas, headers=self.headers)
+
+
+				
+					elif int(data[0]) > 800:
+						print "turn right"
+						self.slideNum+=1
+						print self.slideNum
+
+
+					elif int(data[1]) > 100:
+						if int(self.Yvalue) < -100:
+							print "moved forward"
+							#self.slideOrientaton+=60
+							#if self.slideOrientaton >= 360:
+								#self.slideOrientation = 0
+						else:
+							print "" 
+					else:
+						print ""
+
+
+					
+					"""if int(data[1]) < -1000:
 						if self.Yvalue > -10:
 							#stime.sleep(5) 
 							print "#########################"
 							self.slideNum+=1
 							print self.slideNum
 						else:
-							print ""
+							print "" """
 
-						
-						#print self.Xvalue
-						#self.Xvalue+=1
-
-					
-
-				
-					elif int(data[3]) > 1000 & int(data[3]) > 200:
-						print ''
-					
-					elif int(data[2]) < -800:
-						#send the actual value to Unity and do a check there
-						print ''
-						
-					else:
-						print "" 
 
 
 					self.Xvalue = data[0]
